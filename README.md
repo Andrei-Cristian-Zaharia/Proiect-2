@@ -1,3 +1,3 @@
 # Proiect-2
 
-![Fritzing drawing](Images/schematic.png)
+![Fritzing drawing](Images/sch.png)
