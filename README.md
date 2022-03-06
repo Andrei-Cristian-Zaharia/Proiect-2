@@ -24,6 +24,6 @@ The game "Repeat the colors" is a memory game. We have four colors (LEDs) and fo
 - 220 kOhm ( 5 resistors );
 - 2.2 kOhm ( 4 resistors );
 
-#
+# Schematic
 
 ![Fritzing drawing](Images/sch.png)
