@@ -1,4 +1,5 @@
 #include "ACTIONS.h"
+#include "SONGS.h"
 #include <EEPROM.h>
 
 #define buttonRED 2
@@ -8,11 +9,12 @@
 
 #define maintenanceLED 12
 
+#define switchPIN 13
+
 int level = 0;
 int current_index = 0; // current level
 
 bool can_read = false; // disable / enable input
-
 
 void show_Patern(){ // repeats the pattern that was buit until current level
 
@@ -42,7 +44,7 @@ void choose_Next_Number(){
 
     digitalWrite(maintenanceLED, HIGH);
 
-    int next = random(2);
+    int next = random(4);
     level++;
     EEPROM.write(level, next);
 
@@ -69,10 +71,22 @@ void end_Game(){
 }
 
 void check_buttons(){
-    int readingRED = digitalRead(buttonRED);
-    int readingGREEN = digitalRead(buttonGREEN);
-    int readingBLUE =  digitalRead(buttonBLUE);
-    int readingYELLOW = digitalRead(buttonYELLOW);
+    int readingRED = 0, readingGREEN = 0, readingBLUE = 0, readingYELLOW = 0;
+
+    int value = analogRead(A0);
+    if (value < 400) {
+        Serial.println("Button1");
+        readingRED = 1;
+    } else if (value >= 400 && value < 600) {
+        Serial.println("Button2");
+        readingGREEN = 1;
+    } else if (value >= 600 && value < 700) {
+        Serial.println("Button3");
+        readingBLUE = 1;
+    } else if (value >= 700 && value < 1000) {
+        Serial.println("Button4");
+        readingYELLOW = 1;
+    }
 
     if (readingRED == 1){
         soundRED(shortSound);
@@ -141,9 +155,34 @@ void setup() {
     pinMode(ledYELLOW, OUTPUT);
 
     pinMode(maintenanceLED, OUTPUT);
+
+    choose_Next_Number();
 }
 
 void loop() {
-    if (can_read)
-        check_buttons();
+    int switchValue = digitalRead(switchPIN);
+
+    if (switchValue == 1){
+        if (can_read)
+            check_buttons();
+    } else {
+        int readingRED = 0, readingGREEN = 0, readingBLUE = 0, readingYELLOW = 0;
+
+        int value = analogRead(A0);
+    if (value < 400) {
+        Serial.println("Button1");
+        readingRED = 1;
+    } else if (value >= 400 && value < 600) {
+        Serial.println("Button2");
+        readingGREEN = 1;
+    } else if (value >= 600 && value < 700) {
+        Serial.println("Button3");
+        readingBLUE = 1;
+    } else if (value >= 700 && value < 1000) {
+        Serial.println("Button4");
+        readingYELLOW = 1;
+    }
+
+        if (readingRED == 1) song1();
+    }
 }
