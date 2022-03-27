@@ -1,20 +1,22 @@
-#include "ACTIONS.h"
-#include "SONGS.h"
 #include <EEPROM.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 
-#define buttonRED 2
-#define buttonGREEN 3
-#define buttonBLUE 4
-#define buttonYELLOW 5
+#include "SONGS.h"
+#include "ACTIONS.h"
 
 #define maintenanceLED 12
 
 #define switchPIN 13
 
+
+LiquidCrystal_I2C lcd(0x27,16,2);
+
 int level = 0;
 int current_index = 0; // current level
 
 bool can_read = false; // disable / enable input
+int last_switch;
 
 void show_Patern(){ // repeats the pattern that was buit until current level
 
@@ -54,8 +56,8 @@ void choose_Next_Number(){
 
     delay(500);
 
+    updateDisplay();
     digitalWrite(maintenanceLED, LOW);
-
     can_read = true;
 }
 
@@ -70,23 +72,19 @@ void end_Game(){
     choose_Next_Number();
 }
 
+void reset(){
+    level = 0;
+    current_index = 0;
+}
+
 void check_buttons(){
     int readingRED = 0, readingGREEN = 0, readingBLUE = 0, readingYELLOW = 0;
 
     int value = analogRead(A0);
-    if (value < 400) {
-        Serial.println("Button1");
-        readingRED = 1;
-    } else if (value >= 400 && value < 600) {
-        Serial.println("Button2");
-        readingGREEN = 1;
-    } else if (value >= 600 && value < 700) {
-        Serial.println("Button3");
-        readingBLUE = 1;
-    } else if (value >= 700 && value < 1000) {
-        Serial.println("Button4");
-        readingYELLOW = 1;
-    }
+    if (value < 400) { readingRED = 1; } 
+    else if (value >= 400 && value < 600) { readingGREEN = 1; } 
+    else if (value >= 600 && value < 700) { readingBLUE = 1; }
+    else if (value >= 700 && value < 1000) { readingYELLOW = 1; }
 
     if (readingRED == 1){
         soundRED(shortSound);
@@ -141,13 +139,22 @@ void check_buttons(){
     }
 }
 
+void updateDisplay(){
+    lcd.init();
+    
+    lcd.setCursor(0,0);
+    lcd.print("Score:");
+    lcd.setCursor(10,0);
+    lcd.print("Mode:");
+
+    lcd.setCursor(6,0);
+    lcd.print(level);
+    lcd.setCursor(15,0);
+    lcd.print(digitalRead(switchPIN)); 
+}
+
 void setup() {
     Serial.begin(9600);
-
-    pinMode(buttonRED, INPUT);
-    pinMode(buttonGREEN, INPUT);
-    pinMode(buttonBLUE, INPUT);
-    pinMode(buttonYELLOW, INPUT);
 
     pinMode(ledRED, OUTPUT);
     pinMode(ledGREEN, OUTPUT);
@@ -156,33 +163,43 @@ void setup() {
 
     pinMode(maintenanceLED, OUTPUT);
 
-    choose_Next_Number();
+    last_switch = 1;
+    
+    lcd.init();                      // initialize the lcd 
+    lcd.init();
+    // Print a message to the LCD.
+    lcd.backlight();
+    
+    updateDisplay();
 }
 
 void loop() {
     int switchValue = digitalRead(switchPIN);
 
+    if (last_switch != switchValue){
+        if (last_switch == 0)
+            choose_Next_Number();
+        else if (last_switch == 1) reset();
+        
+        last_switch = switchValue;
+        updateDisplay();
+    }
+
     if (switchValue == 1){
         if (can_read)
             check_buttons();
     } else {
-        int readingRED = 0, readingGREEN = 0, readingBLUE = 0, readingYELLOW = 0;
+      int readingRED = 0, readingGREEN = 0, readingBLUE = 0, readingYELLOW = 0;
 
-        int value = analogRead(A0);
-    if (value < 400) {
-        Serial.println("Button1");
-        readingRED = 1;
-    } else if (value >= 400 && value < 600) {
-        Serial.println("Button2");
-        readingGREEN = 1;
-    } else if (value >= 600 && value < 700) {
-        Serial.println("Button3");
-        readingBLUE = 1;
-    } else if (value >= 700 && value < 1000) {
-        Serial.println("Button4");
-        readingYELLOW = 1;
-    }
+      int value = analogRead(A0);
+      if (value < 400) { readingRED = 1; } 
+      else if (value >= 400 && value < 600) { readingGREEN = 1; } 
+      else if (value >= 600 && value < 700) { readingBLUE = 1; }
+      else if (value >= 700 && value < 1000) { readingYELLOW = 1; }
 
-        if (readingRED == 1) song1();
+      if (readingRED == 1) song1();
+      if (readingGREEN == 1) song2();
+      if (readingBLUE == 1) song3();
+      if (readingYELLOW == 1) song4();
     }
 }
