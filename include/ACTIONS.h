@@ -2,7 +2,7 @@
 #define ACTIONS_H
 #include <Arduino.h>
 
-enum lengthSound { shortSound, longSound};
+enum lengthSound { shortSound, mediumSound, longSound};
 
 #define ledRED 8
 #define ledGREEN 9
@@ -10,6 +10,8 @@ enum lengthSound { shortSound, longSound};
 #define ledYELLOW 11
 
 #define buzzer 6
+
+static int difficulty = 0;
 
 void soundRED(lengthSound type);
 void soundGREEN(lengthSound type);

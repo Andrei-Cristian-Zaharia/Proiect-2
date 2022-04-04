@@ -9,7 +9,6 @@
 
 #define switchPIN 13
 
-
 LiquidCrystal_I2C lcd(0x27,16,2);
 
 int level = 0;
@@ -18,19 +17,40 @@ int current_index = 0; // current level
 bool can_read = false; // disable / enable input
 int last_switch;
 
+void lightRED(){
+   if (difficulty == 2) soundRED(shortSound);
+      else if (difficulty == 1) soundRED(mediumSound);
+      else soundRED(longSound);
+}
+
+void lightBLUE(){
+   if (difficulty == 2) soundBLUE(shortSound);
+      else if (difficulty == 1) soundBLUE(mediumSound);
+      else soundBLUE(longSound);
+}
+
+void lightGREEN(){
+   if (difficulty == 2) soundGREEN(shortSound);
+      else if (difficulty == 1) soundGREEN(mediumSound);
+      else soundGREEN(longSound);
+}
+
+void lightYELLOW(){
+   if (difficulty == 2) soundYELLOW(shortSound);
+      else if (difficulty == 1) soundYELLOW(mediumSound);
+      else soundYELLOW(longSound);
+}
+
 void show_Patern(){ // repeats the pattern that was buit until current level
 
     current_index = 1;
 
     while (current_index <= level)
     {
-        if (EEPROM.read(current_index) == 0) soundRED(longSound);
-
-        if (EEPROM.read(current_index) == 1) soundGREEN(longSound);
-
-        if (EEPROM.read(current_index) == 2) soundBLUE(longSound);
-
-        if (EEPROM.read(current_index) == 3) soundYELLOW(longSound);
+        if (EEPROM.read(current_index) == 0) lightRED();
+        if (EEPROM.read(current_index) == 1) lightGREEN();
+        if (EEPROM.read(current_index) == 2) lightBLUE();
+        if (EEPROM.read(current_index) == 3) lightYELLOW();
 
         delay(250);
 
@@ -62,7 +82,6 @@ void choose_Next_Number(){
 }
 
 void end_Game(){
-
     digitalWrite(maintenanceLED, HIGH);
     delay(1000);
 
@@ -77,63 +96,74 @@ void reset(){
     current_index = 0;
 }
 
+void changeDif(){
+  if (difficulty == 2)
+    difficulty = 0;
+  else difficulty++;
+
+  updateDisplay();
+}
+
 void check_buttons(){
     int readingRED = 0, readingGREEN = 0, readingBLUE = 0, readingYELLOW = 0;
 
     int value = analogRead(A0);
-    if (value < 400) { readingRED = 1; } 
-    else if (value >= 400 && value < 600) { readingGREEN = 1; } 
-    else if (value >= 600 && value < 700) { readingBLUE = 1; }
-    else if (value >= 700 && value < 1000) { readingYELLOW = 1; }
+    if (value <= 100) { changeDif(); }
+    else if (value > 100 && value < 600) { readingRED = 1; } 
+    else if (value >= 600 && value < 700) { readingGREEN = 1; } 
+    else if (value >= 700 && value < 800) { readingBLUE = 1; }
+    else if (value >= 800 && value < 1000) { readingYELLOW = 1; }
 
-    if (readingRED == 1){
-        soundRED(shortSound);
+    Serial.println(value);
+
+    if (readingRED == 1){ 
+        lightRED();
 
         current_index++;
 
         if (EEPROM.read(current_index) != 0) end_Game();
         if (current_index == level) choose_Next_Number();
 
-        delay(250);
+        delay(150);
 
         return;
     }
 
     if (readingGREEN == 1){
-        soundGREEN(shortSound);
+        lightGREEN();
 
         current_index++;
 
         if (EEPROM.read(current_index) != 1) end_Game();
         if (current_index == level) choose_Next_Number();
 
-        delay(250);
+        delay(150);
 
         return;
     }
 
     if (readingBLUE == 1){
-        soundBLUE(shortSound);
-
+        lightBLUE();
+      
         current_index++;
 
         if (EEPROM.read(current_index) != 2) end_Game();
         if (current_index == level) choose_Next_Number();
 
-        delay(250);
+        delay(150);
 
         return;
     }
 
     if (readingYELLOW == 1){
-        soundYELLOW(shortSound);
+        lightYELLOW();
 
         current_index++;
 
         if (EEPROM.read(current_index) != 3) end_Game();
         if (current_index == level) choose_Next_Number();
 
-        delay(250);
+        delay(150);
 
         return;
     }
@@ -151,6 +181,14 @@ void updateDisplay(){
     lcd.print(level);
     lcd.setCursor(15,0);
     lcd.print(digitalRead(switchPIN)); 
+
+    lcd.setCursor(2,1);
+    lcd.print("Difficulty:");
+    lcd.setCursor(13,1);
+
+    if (difficulty == 0) lcd.print("E");
+    else if (difficulty == 1) lcd.print("M");
+    else if (difficulty == 2) lcd.print("H");
 }
 
 void setup() {
@@ -165,7 +203,7 @@ void setup() {
 
     last_switch = 1;
     
-    lcd.init();                      // initialize the lcd 
+    lcd.init();// initialize the lcd 
     lcd.init();
     // Print a message to the LCD.
     lcd.backlight();

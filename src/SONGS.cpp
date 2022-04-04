@@ -6,6 +6,10 @@ void song1(){
     soundGREEN(shortSound);
     soundBLUE(shortSound);
     soundYELLOW(shortSound);
+    soundRED(mediumSound);
+    soundGREEN(mediumSound);
+    soundBLUE(mediumSound);
+    soundYELLOW(mediumSound);
     soundRED(longSound);
     soundGREEN(longSound);
     soundBLUE(longSound);
@@ -17,6 +21,10 @@ void song2(){
     soundGREEN(shortSound);
     soundBLUE(shortSound);
     soundYELLOW(shortSound);
+    soundRED(mediumSound);
+    soundGREEN(mediumSound);
+    soundBLUE(mediumSound);
+    soundYELLOW(mediumSound);
     soundRED(longSound);
     soundGREEN(longSound);
     soundBLUE(longSound);
@@ -28,6 +36,10 @@ void song3(){
     soundGREEN(shortSound);
     soundBLUE(shortSound);
     soundYELLOW(shortSound);
+    soundRED(mediumSound);
+    soundGREEN(mediumSound);
+    soundBLUE(mediumSound);
+    soundYELLOW(mediumSound);
     soundRED(longSound);
     soundGREEN(longSound);
     soundBLUE(longSound);
@@ -39,8 +51,12 @@ void song4(){
     soundGREEN(shortSound);
     soundBLUE(shortSound);
     soundYELLOW(shortSound);
+    soundRED(mediumSound);
+    soundGREEN(mediumSound);
+    soundBLUE(mediumSound);
+    soundYELLOW(mediumSound);
     soundRED(longSound);
     soundGREEN(longSound);
     soundBLUE(longSound);
-    soundYELLOW(longSound);  
+    soundYELLOW(longSound);
 }
