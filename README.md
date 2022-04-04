@@ -22,7 +22,7 @@ The game "Repeat the colors" is a memory game. We have four colors (LEDs) and fo
 - wires male-male;
 - wires male-female;
 - 220 kOhm ( 5 resistors );
-- 2.2 kOhm ( 4 resistors );
+- 1 kOhm ( 4 resistors );
 
 # Schematic
 
